@@ -3,10 +3,11 @@ import openai
 import streamlit as st
 import pdfplumber
 from io import BytesIO
-from openai_secret_manager import secrets_manager
+import os
 
-# Configura OpenAI API
-openai.api_key = secrets_manager.get_secret("openai")["api_key"]
+# Inicializa el modelo GPT-3
+openai.api_key = os.environ.get("OPENAI_API_KEY")
+
 
 # Función para extraer texto de un archivo PDF
 def extract_text_from_pdf(file):
