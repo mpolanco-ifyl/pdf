@@ -14,12 +14,12 @@ def extract_text_from_pdf(file):
         pages = [page.extract_text() for page in pdf.pages]
         return "\n".join(pages)
 
-# Función para generar respuesta utilizando GPT-3.5-turbo
-def generate_answer(prompt, model="gpt-3.5-turbo"):
+# Función para generar respuesta utilizando GPT-3
+def generate_answer(prompt, model="text-davinci-003"):
     completions = openai.Completion.create(
         engine=model,
         prompt=prompt,
-        max_tokens=100,
+        max_tokens=500,
         n=1,
         stop=None,
         temperature=0.5,
