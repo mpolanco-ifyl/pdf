@@ -8,7 +8,6 @@ import os
 # Inicializa el modelo GPT-3
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
-
 # Función para extraer texto de un archivo PDF
 def extract_text_from_pdf(file):
     with pdfplumber.open(file) as pdf:
@@ -30,16 +29,13 @@ def generate_answer(prompt, model="gpt-3.5-turbo"):
     return message
 
 # Interfaz de Streamlit
-st.title("Lector de PDF y Asistente de Preguntas con GPT-3.5-turbo")
+st.title("Asistente de Preguntas sobre PDF con GPT-3.5-turbo")
 
 uploaded_file = st.file_uploader("Sube un archivo PDF", type=["pdf"])
 
 if uploaded_file:
     with st.spinner("Extrayendo texto del archivo PDF..."):
         pdf_text = extract_text_from_pdf(uploaded_file)
-
-    st.write("Texto extraído:")
-    st.write(pdf_text)
 
     question = st.text_input("Escribe tu pregunta:")
 
