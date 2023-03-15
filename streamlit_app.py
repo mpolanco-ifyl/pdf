@@ -3,7 +3,6 @@ import openai
 import streamlit as st
 import pdfplumber
 from io import BytesIO
-from openai_secret_manager import secrets_manager
 import concurrent.futures
 
 # Inicializa el modelo GPT-3
