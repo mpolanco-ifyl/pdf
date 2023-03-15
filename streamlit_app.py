@@ -3,12 +3,11 @@ import openai
 import streamlit as st
 import pdfplumber
 from io import BytesIO
+from openai_secret_manager import secrets_manager
 import concurrent.futures
-
 
 # Inicializa el modelo GPT-3
 openai.api_key = os.environ.get("OPENAI_API_KEY")
-
 # Función para extraer texto de un archivo PDF
 def extract_text_from_pdf(file):
     with pdfplumber.open(file) as pdf:
@@ -37,7 +36,7 @@ def split_text(text, max_tokens=4096):
     return segments
 
 # Función para generar respuesta utilizando GPT-3.5-turbo
-def generate_answer(prompt, model="gpt-3.5-turbo"):
+def generate_answer(prompt, question, model="gpt-3.5-turbo"):
     completions = openai.ChatCompletion.create(
         model=model,
         messages=[
@@ -51,13 +50,12 @@ def generate_answer(prompt, model="gpt-3.5-turbo"):
         temperature=0.5,
     )
 
-    message = completions.choices[0].text.strip()
+    message = completions.choices[0].content.strip()
     return message
 
 # Función auxiliar para generar respuestas en paralelo
 def generate_answer_for_segment(segment, question):
-    prompt = f"El siguiente texto fue extraído de un PDF:\n\n{segment}\n\nPregunta: {question}\nRespuesta:"
-    return generate_answer(prompt)
+    return generate_answer(segment, question)
 
 # Interfaz de Streamlit
 st.title("Asistente de Preguntas sobre PDF con GPT-3.5-turbo")
