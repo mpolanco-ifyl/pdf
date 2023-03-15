@@ -38,9 +38,13 @@ def split_text(text, max_tokens=4096):
 
 # Función para generar respuesta utilizando GPT-3.5-turbo
 def generate_answer(prompt, model="gpt-3.5-turbo"):
-    completions = openai.Completion.create(
-        engine=model,
-        prompt=prompt,
+    completions = openai.ChatCompletion.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": "Eres un asistente de IA que responde preguntas basadas en el contenido de un PDF."},
+            {"role": "user", "content": f"El texto del PDF es:\n\n{prompt}\n"},
+            {"role": "user", "content": f"Pregunta: {question}"}
+        ],
         max_tokens=100,
         n=1,
         stop=None,
