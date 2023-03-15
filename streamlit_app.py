@@ -3,6 +3,8 @@ import openai
 import streamlit as st
 import pdfplumber
 from io import BytesIO
+import concurrent.futures
+
 
 # Inicializa el modelo GPT-3
 openai.api_key = os.environ.get("OPENAI_API_KEY")
