@@ -49,7 +49,7 @@ def generate_answer(prompt, model="text-davinci-003"):
     return message
 
 # Interfaz de Streamlit
-st.title("Asistente de Preguntas sobre PDF con GPT-3.5-turbo")
+st.title("Asistente de Preguntas sobre PDF con GPT-3")
 
 uploaded_file = st.file_uploader("Sube un archivo PDF", type=["pdf"])
 
