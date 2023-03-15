@@ -34,8 +34,8 @@ def split_text(text, max_tokens=4000):
 
     return segments
 
-# Función para generar respuesta utilizando GPT-3.5-turbo
-def generate_answer(prompt, model="gpt-3.5-turbo"):
+# Función para generar respuesta utilizando GPT-3
+def generate_answer(prompt, model="text-davinci-003"):
     completions = openai.Completion.create(
         engine=model,
         prompt=prompt,
