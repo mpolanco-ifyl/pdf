@@ -13,24 +13,24 @@ def extract_text_from_pdf(file):
         pages = [page.extract_text() for page in pdf.pages]
         return "\n".join(pages)
 
-# Función para dividir el texto en segmentos de menos de 4000 tokens
-def split_text(text, max_tokens=4000):
-    tokens = openai.api_key.split(text)
-    if len(tokens) <= max_tokens:
+# Función para dividir el texto en segmentos
+def split_text(text, max_tokens=4096):
+    if len(text) <= max_tokens:
         return [text]
 
     segments = []
+    words = text.split()
     current_segment = []
 
-    for token in tokens:
-        if len(current_segment) + len(token) > max_tokens:
-            segments.append("".join(current_segment))
+    for word in words:
+        if len(' '.join(current_segment) + ' ' + word) > max_tokens:
+            segments.append(' '.join(current_segment))
             current_segment = []
 
-        current_segment.append(token)
+        current_segment.append(word)
 
     if current_segment:
-        segments.append("".join(current_segment))
+        segments.append(' '.join(current_segment))
 
     return segments
 
@@ -49,7 +49,7 @@ def generate_answer(prompt, model="text-davinci-003"):
     return message
 
 # Interfaz de Streamlit
-st.title("Asistente de Preguntas sobre PDF con GPT-3")
+st.title("Asistente de Preguntas sobre PDF con GPT-3.5")
 
 uploaded_file = st.file_uploader("Sube un archivo PDF", type=["pdf"])
 
@@ -60,7 +60,7 @@ if uploaded_file:
     question = st.text_input("Escribe tu pregunta:")
 
     if question:
-        text_segments = split_text(pdf_text)
+        text_segments = split_text(pdf_text, max_tokens=2048)  # Reducir el tamaño de los segmentos para tener en cuenta la pregunta y la respuesta
         answers = []
 
         for i, segment in enumerate(text_segments):
