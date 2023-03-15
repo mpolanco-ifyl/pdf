@@ -34,8 +34,8 @@ def split_text(text, max_tokens=4096):
 
     return segments
 
-# Función para generar respuesta utilizando GPT-3
-def generate_answer(prompt, model="text-davinci-003"):
+# Función para generar respuesta utilizando GPT-3.5-turbo
+def generate_answer(prompt, model="gpt-3.5-turbo"):
     completions = openai.Completion.create(
         engine=model,
         prompt=prompt,
@@ -48,8 +48,13 @@ def generate_answer(prompt, model="text-davinci-003"):
     message = completions.choices[0].text.strip()
     return message
 
+# Función auxiliar para generar respuestas en paralelo
+def generate_answer_for_segment(segment, question):
+    prompt = f"El siguiente texto fue extraído de un PDF:\n\n{segment}\n\nPregunta: {question}\nRespuesta:"
+    return generate_answer(prompt)
+
 # Interfaz de Streamlit
-st.title("Asistente de Preguntas sobre PDF con GPT-3.5")
+st.title("Asistente de Preguntas sobre PDF con GPT-3.5-turbo")
 
 uploaded_file = st.file_uploader("Sube un archivo PDF", type=["pdf"])
 
@@ -60,14 +65,13 @@ if uploaded_file:
     question = st.text_input("Escribe tu pregunta:")
 
     if question:
-        text_segments = split_text(pdf_text, max_tokens=2048)  # Reducir el tamaño de los segmentos para tener en cuenta la pregunta y la respuesta
+        text_segments = split_text(pdf_text, max_tokens=2048)
         answers = []
 
-        for i, segment in enumerate(text_segments):
-            with st.spinner(f"Generando respuesta para el segmento {i + 1}..."):
-                prompt = f"El siguiente texto fue extraído de un PDF:\n\n{segment}\n\nPregunta: {question}\nRespuesta:"
-                answer = generate_answer(prompt)
-                answers.append(answer)
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_segment = {executor.submit(generate_answer_for_segment, segment, question): segment for segment in text_segments}
+            for future in concurrent.futures.as_completed(future_to_segment):
+                answers.append(future.result())
 
         st.write("Respuesta:")
         st.write(" ".join(answers))
